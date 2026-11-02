@@ -1,0 +1,76 @@
+<!--
+  Fast Break — Get a Quote form → CRM (Assign New Estimate)
+  PASTE INTO: your mail host Website Builder > Get a Quote page > replace "Contact form 18"
+  with an "Embed code / Custom HTML" element containing everything in this file.
+  DO NOT touch the Booking form (the one that collects card / CVV). Leave it as-is.
+  DO NOT connect any old Granot form code.
+
+  On submit this POSTs to https://crm.fastbreakcrm.test/api/website-leads which:
+   - creates an estimate (status unassigned, lead source "Web Lead") in Assign New Estimate
+   - emails WEBSITE_LEAD_NOTICE_TO "New Web Lead - <name>" with job # + link
+   - shows the CRM banner "New website quote waiting to be assigned"
+  Allowed origins: https://fastbreakcrm.test and https://fastbreakcrm.test.
+  your mail host may render embeds inside an iframe; the request still works (CORS + Origin of the iframe
+  host). If the embed host is different (e.g. *.zyrosite.com preview) the CRM rejects it with 403 —
+  test on the live domain.
+  company_website is a hidden spam trap; leave it empty.
+-->
+<div id="fb-quote">
+<style>
+  #fb-quote{font-family:inherit;max-width:560px;margin:0 auto}
+  #fb-quote label{display:block;margin:0 0 10px;font-size:15px}
+  #fb-quote input,#fb-quote textarea{width:100%;box-sizing:border-box;padding:10px;border:1px solid #c7ccd6;border-radius:6px;font-size:15px;margin-top:4px}
+  #fb-quote .row{display:flex;gap:10px}#fb-quote .row label{flex:1}
+  #fb-quote button{background:#c8102e;color:#fff;border:0;border-radius:6px;padding:12px 22px;font-size:16px;cursor:pointer}
+  #fb-quote button[disabled]{opacity:.6}
+  #fb-quote .msg{margin-top:12px;padding:12px;border-radius:6px;display:none}
+  #fb-quote .ok{background:#e7f6ec;color:#14532d;display:block}
+  #fb-quote .err{background:#fdecec;color:#7f1d1d;display:block}
+</style>
+<form id="fb-quote-form" method="post" action="https://crm.fastbreakcrm.test/api/website-leads" target="_top">
+  <div style="position:absolute;left:-9999px" aria-hidden="true">
+    <label>Company website <input name="company_website" tabindex="-1" autocomplete="off"></label>
+  </div>
+  <label>Name <input name="name" required maxlength="120" autocomplete="name"></label>
+  <div class="row">
+    <label>Email <input name="email" type="email" required maxlength="254" autocomplete="email"></label>
+    <label>Phone <input name="phone" type="tel" required maxlength="30" autocomplete="tel"></label>
+  </div>
+  <div class="row">
+    <label>Pickup ZIP <input name="from_zip" required inputmode="numeric" pattern="[0-9]{5}" maxlength="10"></label>
+    <label>Delivery ZIP <input name="to_zip" required inputmode="numeric" pattern="[0-9]{5}" maxlength="10"></label>
+  </div>
+  <label>Vehicle year / make / model (one per line)
+    <textarea name="vehicle" rows="3" maxlength="400" placeholder="2020 Toyota Camry"></textarea>
+  </label>
+  <button type="submit">Get a Quote</button>
+  <div class="msg" role="status" aria-live="polite"></div>
+</form>
+<script>
+(function () {
+  var form = document.getElementById("fb-quote-form");
+  if (!form || !window.fetch) return; // no JS: plain POST shows the CRM thank-you page
+  var msg = form.querySelector(".msg"), btn = form.querySelector("button");
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    var data = {};
+    new FormData(form).forEach(function (v, k) { data[k] = v; });
+    btn.disabled = true; btn.textContent = "Sending…"; msg.className = "msg"; msg.textContent = "";
+    fetch(form.action, { method: "POST", headers: { "content-type": "application/json", "accept": "application/json" }, body: JSON.stringify(data) })
+      .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
+      .then(function (res) {
+        if (res.ok && res.j.ok) {
+          form.reset();
+          msg.className = "msg ok";
+          msg.textContent = "Thank you! We have your quote request" + (res.j.jobNumber ? " (#" + res.j.jobNumber + ")" : "") + ". A coordinator will contact you shortly. Questions? Call 555-010-0100.";
+        } else {
+          msg.className = "msg err";
+          msg.textContent = (res.j && (res.j.error || (res.j.errors || []).join(" "))) || "Something went wrong. Please call 555-010-0100.";
+        }
+      })
+      .catch(function () { msg.className = "msg err"; msg.textContent = "We could not send your request. Please call 555-010-0100."; })
+      .then(function () { btn.disabled = false; btn.textContent = "Get a Quote"; });
+  });
+})();
+</script>
+</div>

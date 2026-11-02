@@ -1,0 +1,19 @@
+import { NextResponse, type NextRequest } from "next/server";
+import { createSupabaseServerClient } from "@/lib/supabase";
+
+function safeNextPath(value: string | null) {
+  if (!value || !value.startsWith("/") || value.startsWith("//") || value.includes("\\")) return "/user-login";
+  return value;
+}
+
+export async function GET(request: NextRequest) {
+  const code = request.nextUrl.searchParams.get("code");
+  const next = safeNextPath(request.nextUrl.searchParams.get("next"));
+  if (!code) return NextResponse.redirect(new URL("/user-login?error=invite", request.url));
+
+  const supabase = await createSupabaseServerClient();
+  const { error } = await supabase.auth.exchangeCodeForSession(code);
+  if (error) return NextResponse.redirect(new URL("/user-login?error=invite", request.url));
+
+  return NextResponse.redirect(new URL(next, request.url));
+}
