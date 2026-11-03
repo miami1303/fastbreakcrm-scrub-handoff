@@ -16,8 +16,8 @@ const input = (kind = "custom_letter", extra = {}) => ({
   ...extra,
 });
 
-test("seeds = the 8 code letters, same keys/order, active", () => {
-  assert.equal(SEED_TEMPLATES.length, 8);
+test("seeds = the 7 code letters, same keys/order, active", () => {
+  assert.equal(SEED_TEMPLATES.length, 7);
   assert.deepEqual(SEED_TEMPLATES.map(t => t.key), [...CUSTOMER_MESSAGE_KINDS]);
   assert.deepEqual(SEED_TEMPLATES.map(t => t.name), CUSTOMER_LETTERS.map(l => l.title));
   for (const t of SEED_TEMPLATES) assert.equal(t.opens_quote, isQuoteMessageKind(t.key));
@@ -61,8 +61,8 @@ test("rep title falls back to Transport Coordinator", () => {
 });
 
 test("active list: DB rows sorted, inactive hidden, seeds when empty", () => {
-  assert.equal(activeTemplates([]).length, 8);
-  assert.equal(activeTemplates(null).length, 8);
+  assert.equal(activeTemplates([]).length, 7);
+  assert.equal(activeTemplates(null).length, 7);
   const rows = [{ ...SEED_TEMPLATES[0], sort_order: 50 }, { ...SEED_TEMPLATES[1], sort_order: 5 }, { ...SEED_TEMPLATES[2], is_active: false }];
   assert.deepEqual(activeTemplates(rows).map(r => r.key), ["company_intro", "request_received"]);
 });

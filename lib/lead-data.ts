@@ -28,7 +28,6 @@ export type LeadEstimate = QuoteEstimate & {
   miles_zips: string | null;
   extra_stop_html: string | null;
   shipment_remarks: string | null;
-  flex?: boolean | null;
   deleted_at: string | null;
   deposit_amount: number | null;
   cod_amount: number | null;

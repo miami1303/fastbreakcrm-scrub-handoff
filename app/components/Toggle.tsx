@@ -1,6 +1,6 @@
 "use client";
 
-// Shared on/off switch. Green when on. Used for FLEX, ASAP, and Auto-charge.
+// Shared on/off switch. Green when on. Used for ASAP, and Auto-charge.
 // A switch, not a checkbox and not a dropdown: the track slides and the word says On or Off.
 import { useId } from "react";
 
@@ -20,7 +20,7 @@ export default function Toggle({ on, onChange, label, hint, disabled, testId, ti
   size?: "sm";
 }) {
   const hintId = useId();
-  // Compact chip (vehicle flags: FLEX / ASAP / INOP / ENC-OPEN / EXPEDITED). Owner 2026-10-31:
+  // Compact chip (vehicle flags: ASAP / INOP / ENC-OPEN / EXPEDITED). Owner 2026-10-31:
   // no sliding track; a small pill that is filled when on, so several fit on one or two rows.
   if (size === "sm") {
     return (

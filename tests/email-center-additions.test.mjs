@@ -50,6 +50,6 @@ test("outbound mail asks for no auto-replies", () => {
 
 test("payment_link migration is additive and keeps every existing kind", () => {
   const sql = readFileSync(new URL("../supabase/migrations/20261030230000_payment_link_email_kind.sql", import.meta.url), "utf8");
-  for (const k of ["cc_form", "e_quote", "booked_esign", "free_text", "request_received", "company_intro", "ready_to_book", "flex_pricing", "honest_followup", "booked_scheduled", "pickup_confirmed", "hi_lets_chat", "payment_link"]) assert.ok(sql.includes(`'${k}'`), k);
+  for (const k of ["cc_form", "e_quote", "booked_esign", "free_text", "request_received", "company_intro", "ready_to_book", "honest_followup", "booked_scheduled", "pickup_confirmed", "hi_lets_chat", "payment_link"]) assert.ok(sql.includes(`'${k}'`), k);
   assert.doesNotMatch(sql, /drop table|delete from|update /i);
 });

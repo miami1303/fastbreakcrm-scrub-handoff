@@ -135,7 +135,7 @@ export const EMAIL_KIND_LABEL: Record<EmailKind, string> = {
  * send (CC form / E-Quote / E-Sign) stays the original three.
  */
 export const CUSTOMER_MESSAGE_KINDS = [
-  "request_received", "company_intro", "ready_to_book", "flex_pricing",
+  "request_received", "company_intro", "ready_to_book",
   "honest_followup", "booked_scheduled", "pickup_confirmed", "hi_lets_chat",
 ] as const;
 export type CustomerMessageKind = (typeof CUSTOMER_MESSAGE_KINDS)[number];
@@ -145,7 +145,6 @@ export const CUSTOMER_MESSAGE_LABEL: Record<CustomerMessageKind, string> = {
   request_received: "Request received",
   company_intro: "Company intro",
   ready_to_book: "Ready to book",
-  flex_pricing: "FLEX pricing",
   honest_followup: "Honest quote follow-up",
   booked_scheduled: "Booked — you're scheduled",
   pickup_confirmed: "Pickup confirmed",

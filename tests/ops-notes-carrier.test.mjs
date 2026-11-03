@@ -9,7 +9,7 @@ import { eventLabel, notifyKindFor, viewLabel } from "../lib/view-tracking.ts";
 
 const input = (extra = {}) => ({
   est: { job_number: "FB400001", customer_name: "Jane Rivera", status: "booked", primary_date: "2026-11-04", created_at: "2026-10-23T12:00:00Z" },
-  vehicles: [{ year: 2021, make: "Toyota", model: "Camry", vehicle_type: "Sedan", is_running: false, is_enclosed: true, flex: true, asap: true, expedited: true }],
+  vehicles: [{ year: 2021, make: "Toyota", model: "Camry", vehicle_type: "Sedan", is_running: false, is_enclosed: true, asap: true, expedited: true }],
   quote: { total_amount: 1250, deposit_amount: 200 },
   rep: { name: "Sam Rep", email: "rep@example.test", phone: "" },
   assetBaseUrl: "https://crm.example.test",
@@ -60,19 +60,19 @@ test("selected toggles print on the line UNDER the vehicle, Remarks stays blank"
   const body = buildQuoteBody(input());
   const m = body.match(/<tr data-vehicle-flags="1">([\s\S]*?)<\/tr>/);
   assert.ok(m, "flag line exists");
-  assert.match(m[1], /data-flags-main="1"[^>]*>FLEX &middot; ASAP &middot; EXPEDITED</);
+  assert.match(m[1], /data-flags-main="1"[^>]*>ASAP &middot; EXPEDITED</);
   assert.match(m[1], /data-flags-run="1"[^>]*><span style="color:#B12E39;">INOP<\/span>/);
   assert.match(m[1], /data-flags-enclosed="1"[^>]*>Enclosed</);
   // Vehicle row itself: no flag words (Remarks blank, no typed remark).
   const row = body.slice(body.indexOf("2021 Toyota Camry"), body.indexOf('data-vehicle-flags="1"'));
-  for (const t of ["FLEX", "ASAP", "INOP", "EXPEDITED"]) assert.ok(!row.includes(t), `${t} not in Remarks`);
+  for (const t of ["ASAP", "INOP", "EXPEDITED"]) assert.ok(!row.includes(t), `${t} not in Remarks`);
   assert.equal(vehicleFlagLineHtml({ is_running: true, is_enclosed: false }), "", "no flags -> no line, never OPEN");
-  assert.equal(vehicleFlagLineText({ is_running: false, is_enclosed: false, flex: true }), "FLEX · INOP");
+  assert.equal(vehicleFlagLineText({ is_running: false, is_enclosed: false, asap: true }), "ASAP · INOP");
   const typed = buildQuoteBody(input({ vehicles: [{ year: 2021, make: "Toyota", model: "Camry", is_running: true, remarks: "Keys at desk" }] }));
   assert.ok(typed.includes(">Keys at desk<") && !typed.includes("data-vehicle-flags"));
   const text = buildQuoteText(input());
   assert.match(text, /\| Sedan \| No \| Yes \|  \| 1 \|/);
-  assert.match(text, /\n  FLEX · ASAP · EXPEDITED · INOP · Enclosed/);
+  assert.match(text, /\n  ASAP · EXPEDITED · INOP · Enclosed/);
   assert.ok(!/OPEN/.test(text + body.replace(/OPEN_/g, "")));
 });
 

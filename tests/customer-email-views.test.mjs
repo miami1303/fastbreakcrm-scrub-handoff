@@ -95,13 +95,13 @@ test("recurring merge: the same hit is one row; a 15-second pixel stays and is m
 test("only pickup confirmed uses landing; all other letters including quote kinds use direct link and pixel", () => {
   assert.equal(isQuoteMessageKind("ready_to_book"), true);
   assert.equal(isQuoteMessageKind("hi_lets_chat"), true);
-  assert.equal(isQuoteMessageKind("flex_pricing"), false);
+  assert.equal(isQuoteMessageKind("honest_followup"), false);
   assert.equal(isQuoteMessageKind("e_quote"), false);
   const quote = messageLinks("ready_to_book", "https://crm.example.test/", token, "FB400001");
   assert.equal(quote.links.trackingPixelUrl, `https://crm.example.test/api/email/open/${token}`);
   assert.equal(quote.links.quoteLandingHref, null);
   assert.equal(quote.reservationLink, quote.documentUrl);
-  const other = messageLinks("flex_pricing", "https://crm.example.test", token, "FB400001");
+  const other = messageLinks("honest_followup", "https://crm.example.test", token, "FB400001");
   assert.equal(other.links.quoteLandingHref, null);
   assert.equal(other.links.trackingPixelUrl, `https://crm.example.test/api/email/open/${token}`);
   const pickup = messageLinks("pickup_confirmed", "https://crm.example.test", token, "FB400001");
@@ -161,7 +161,7 @@ test("regular and quote letters link directly to the document and keep the pixel
   assert.ok(quote.includes(`href="https://crm.example.test/d/FB400001/${token}"`), "direct document link");
   assert.ok(quote.includes("Click your job number FB400001 to view your quote"));
   assert.ok(quote.includes(`/api/email/open/${token}`), "quote letters keep the pixel");
-  const other = renderTemplate("flex_pricing", sample({ links: { ...links, quoteLandingHref: null } })).html;
+  const other = renderTemplate("honest_followup", sample({ links: { ...links, quoteLandingHref: null } })).html;
   assert.ok(other.includes(`/api/email/open/${token}`), "other letters keep the pixel");
   assert.ok(!other.includes(`/v/${token}`), "other letters have no landing link");
   assert.ok(other.includes(OTHER_JOB_LINE.replace("{job_number}", "FB400001")));
@@ -172,7 +172,7 @@ test("regular and quote letters link directly to the document and keep the pixel
 
 test("letters use company settings, the repo logo, and the draft fax", () => {
   const company = { ...DEFAULT_COMPANY, mainPhone: "555-000-1111", companyEmail: "new@example.test", website: "example.test", address: "Denver, CO" };
-  for (const key of ["request_received", "company_intro", "ready_to_book", "flex_pricing", "honest_followup", "booked_scheduled", "pickup_confirmed", "hi_lets_chat"]) {
+  for (const key of ["request_received", "company_intro", "ready_to_book", "honest_followup", "booked_scheduled", "pickup_confirmed", "hi_lets_chat"]) {
     const html = renderTemplate(key, sample({ company, rep: { name: "Sam Rep", email: "", phone: "" } })).html;
     assert.ok(html.includes("https://crm.example.test/brand/fastbreak-logo.png"), `${key}: logo`);
     assert.ok(html.includes("555-000-1111") && !html.includes("555-010-0101") && !html.includes("866-240-7648"), `${key}: office phone from settings`);

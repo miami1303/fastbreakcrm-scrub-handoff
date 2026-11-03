@@ -7,7 +7,7 @@ alter table public.crm_emails drop constraint if exists crm_emails_kind_check;
 alter table public.crm_emails add constraint crm_emails_kind_check
   check (kind in (
     'cc_form', 'e_quote', 'booked_esign', 'free_text',
-    'request_received', 'company_intro', 'ready_to_book', 'flex_pricing',
+    'request_received', 'company_intro', 'ready_to_book',
     'honest_followup', 'booked_scheduled', 'pickup_confirmed', 'hi_lets_chat'
   ));
 

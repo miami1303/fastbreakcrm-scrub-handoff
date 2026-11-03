@@ -140,7 +140,7 @@ test("customer payments: every customer document once a payment is entered (book
 
 test("customer documents: multi-vehicle prices, no deposit/COD split, payment rows follow the booked rule", () => {
   const vehicles = [
-    { year: 2021, make: "Toyota", model: "Camry", vehicle_type: "Sedan", is_running: true, is_enclosed: false, deposit_amount: 200, cod_amount: 400, flex: true, asap: true, remarks: "Keys" },
+    { year: 2021, make: "Toyota", model: "Camry", vehicle_type: "Sedan", is_running: true, is_enclosed: false, deposit_amount: 200, cod_amount: 400, asap: true, remarks: "Keys" },
     { year: 2019, make: "Ford", model: "F-150", vehicle_type: "Pickup", is_running: true, is_enclosed: false, deposit_amount: 95, cod_amount: 600 },
   ];
   const doc = {
@@ -152,7 +152,7 @@ test("customer documents: multi-vehicle prices, no deposit/COD split, payment ro
   };
   const quote = renderTemplate("e_quote", { ...doc, paidAmount: 295 }).html;
   assert.ok(quote.includes("$600.00") && quote.includes("$695.00"));
-  assert.ok(quote.includes(">Keys<") && quote.includes("FLEX &middot; ASAP"), "remark in Remarks, flags on the line under");
+  assert.ok(quote.includes(">Keys<") && quote.includes(">ASAP<"), "remark in Remarks, flags on the line under");
   assert.ok(quote.includes("$1295.00"));
   // Owner 2026-10-31: a payment entered shows on the E-Quote too (before booking).
   assert.ok(quote.includes("Customer Payment") && quote.includes("Customer Balance") && quote.includes("$1000.00"));

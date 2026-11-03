@@ -76,22 +76,6 @@ Important: if you have not already, please send your pickup and delivery address
 We look forward to providing you with a seamless, stress-free transport experience.`,
   },
   {
-    key: "flex_pricing",
-    title: "FLEX pricing",
-    subject: "Save on your auto transport with FLEX pricing",
-    body: `Dear {customer_name},
-
-Why pay premium pricing if there is no rush to ship your vehicle?
-
-At {company_name}, we offer exclusive FLEX Pricing, a smart, cost-effective option for customers with flexible pickup dates. If you can provide a pickup window of 1-10 days, or book at least 30 days in advance, we will secure some of the lowest rates in the industry without sacrificing service or reliability.
-
-Price Match Guarantee: already have a quote? We will match or beat any rate from a reputable, licensed carrier. Just send us the written estimate.
-
-Ready to lock in your savings? Reply with your preferred pickup dates or let us know how flexible your schedule is, and we will handle the rest.
-
-Looking forward to assisting you!`,
-  },
-  {
     key: "honest_followup",
     title: "Honest quote follow-up",
     subject: "A quick note about your auto transport quote",

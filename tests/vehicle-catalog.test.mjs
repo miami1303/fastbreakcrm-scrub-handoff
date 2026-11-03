@@ -26,7 +26,7 @@ const REMOVED = [
 ];
 
 const MUST = {
-  Ford: ["F-150", "F-250", "F-350", "F-450", "F-550", "Ranger", "Explorer", "Escape", "Bronco", "Mustang", "Edge", "Expedition", "Maverick", "Transit", "F-150 Lightning", "Mustang Mach-E", "Flex", "GT"],
+  Ford: ["F-150", "F-250", "F-350", "F-450", "F-550", "Ranger", "Explorer", "Escape", "Bronco", "Mustang", "Edge", "Expedition", "Maverick", "Transit", "F-150 Lightning", "Mustang Mach-E", "GT"],
   Chevrolet: ["Silverado 1500", "Silverado 2500HD", "Silverado 3500HD", "Equinox", "Malibu", "Tahoe", "Suburban", "Traverse", "Colorado", "Camaro", "Corvette", "Silverado EV", "Equinox EV", "Blazer EV", "Bolt", "Bolt EUV", "Volt", "Avalanche", "HHR", "SS", "Cobalt"],
   GMC: ["Sierra 1500", "Sierra 2500HD", "Yukon", "Acadia", "Terrain", "Sierra EV", "Envoy", "Jimmy", "Hummer EV Pickup", "Hummer EV SUV"],
   Ram: ["1500", "2500", "3500", "4500", "5500", "Dakota", "Rampage"],

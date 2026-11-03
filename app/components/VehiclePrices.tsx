@@ -3,7 +3,7 @@
 // Per-vehicle Deposit / Carrier COD / Total. Shown on Charges only once a second vehicle exists.
 // Total = Deposit + Carrier COD + Additional charges - Discount. Each vehicle is numbered (1., 2., …;
 // the vehicle# used in the Additional charges & discount box). Under each vehicle row a compact
-// chip line puts each toggle under its own column, like VehicleList: FLEX / ASAP / EXPEDITED under
+// chip line puts each toggle under its own column, like VehicleList: ASAP / EXPEDITED under
 // Year / Make / Model (+ Type), INOP under Run, ENC / OPEN under Enclosed (Owner 2026-10-31).
 import { useState } from "react";
 import Link from "next/link";
@@ -14,10 +14,9 @@ import { qtyOf } from "@/lib/pricing";
 import { centsToInput } from "@/lib/vehicle-pricing";
 import { codFromTotalWithCharges, vehicleMoney } from "@/lib/vehicle-charges";
 
-export default function VehiclePrices({ leadId, vehicles, flexOn, asapOn, expeditedOn = false, onChange }: {
+export default function VehiclePrices({ leadId, vehicles, asapOn, expeditedOn = false, onChange }: {
   leadId: string;
   vehicles: VehicleValue[];
-  flexOn: boolean;
   asapOn: boolean;
   /** Expedited toggle (vehicles.expedited column exists). */
   expeditedOn?: boolean;
@@ -68,8 +67,8 @@ export default function VehiclePrices({ leadId, vehicles, flexOn, asapOn, expedi
                   </td>
                 </tr>
                 {/* Owner 2026-10-31: each toggle under its own column (mirrors read-only VehicleFlags):
-                    FLEX / ASAP / EXPEDITED under Year/Make/Model (+ Type), INOP under Run, ENC/OPEN under Enclosed. */}
-                <VehicleToggleCells v={v} flexOn={flexOn} asapOn={asapOn} expeditedOn={expeditedOn} trailing={4} onChange={patch => onChange(index, patch)} />
+                    ASAP / EXPEDITED under Year/Make/Model (+ Type), INOP under Run, ENC/OPEN under Enclosed. */}
+                <VehicleToggleCells v={v} asapOn={asapOn} expeditedOn={expeditedOn} trailing={4} onChange={patch => onChange(index, patch)} />
                 </tbody>
               );
             })}
@@ -80,15 +79,14 @@ export default function VehiclePrices({ leadId, vehicles, flexOn, asapOn, expedi
   );
 }
 
-type ToggleProps = { v: VehicleValue; flexOn: boolean; asapOn: boolean; expeditedOn: boolean; onChange: (patch: Partial<VehicleValue>) => void };
+type ToggleProps = { v: VehicleValue; asapOn: boolean; expeditedOn: boolean; onChange: (patch: Partial<VehicleValue>) => void };
 export type TogglePart = "main" | "run" | "enclosed";
 
-/** One column's chips: "main" = FLEX/ASAP/EXPEDITED, "run" = INOP, "enclosed" = ENC/OPEN. */
-export function VehicleToggleRow({ v, flexOn, asapOn, expeditedOn, onChange, part = "main" }: ToggleProps & { part?: TogglePart }) {
+/** One column's chips: "main" = ASAP/EXPEDITED, "run" = INOP, "enclosed" = ENC/OPEN. */
+export function VehicleToggleRow({ v, asapOn, expeditedOn, onChange, part = "main" }: ToggleProps & { part?: TogglePart }) {
   return (
     <div className={`veh-flag-row veh-toggle-row veh-toggle-${part}`} data-testid={`vehicle-toggle-${part}`} onClick={e => e.stopPropagation()}>
       {part === "main" && <>
-        {flexOn && <Toggle on={!!v.flex} label="FLEX" size="sm" testId="veh-flex" title="Shows FLEX in this vehicle's Remarks" onChange={on => onChange({ flex: on })} />}
         {asapOn && <Toggle on={!!v.asap} label="ASAP" size="sm" testId="veh-asap" title="Shows ASAP in this vehicle's Remarks" onChange={on => onChange({ asap: on })} />}
         {expeditedOn && <Toggle on={!!v.expedited} label="EXPEDITED" size="sm" testId="veh-expedited" title="Shows EXPEDITED in this vehicle's Remarks" onChange={on => onChange({ expedited: on })} />}
       </>}

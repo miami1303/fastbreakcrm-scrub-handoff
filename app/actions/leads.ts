@@ -29,7 +29,7 @@ import { isBlankHtml, sanitizeRichHtml } from "@/lib/templates/sanitize";
 
 export type Result<T = object> = ({ ok: true } & T) | { ok: false; error: string };
 
-type VehicleInput = { year?: string | number | null; make?: string; model?: string; vehicle_type?: string; is_running?: boolean; is_enclosed?: boolean; remarks?: string; color?: string; engine?: string; qty?: string | number; price?: string | number | null; flex?: boolean; deposit?: string | number | null; cod?: string | number | null; asap?: boolean; expedited?: boolean; charges?: { description?: string; amount?: string | number; collect?: string }[]; discount?: string | number | null };
+type VehicleInput = { year?: string | number | null; make?: string; model?: string; vehicle_type?: string; is_running?: boolean; is_enclosed?: boolean; remarks?: string; color?: string; engine?: string; qty?: string | number; price?: string | number | null; deposit?: string | number | null; cod?: string | number | null; asap?: boolean; expedited?: boolean; charges?: { description?: string; amount?: string | number; collect?: string }[]; discount?: string | number | null };
 const ENGINES = new Set(["Gas", "Diesel", "Hybrid", "Electric"]);
 
 const text = (v: unknown, max = 500) => {
@@ -53,7 +53,7 @@ function fail(error: unknown): { ok: false; error: string } {
 }
 
 /** Vehicles (no fixed limit; 100 is a sanity cap). extras = color/engine/qty/price columns exist. */
-function vehicleRows(estimateId: string, vehicles: VehicleInput[], extras = false, flex = false, pricing = false, persistMoney = false, expedited = false, charges = false) {
+function vehicleRows(estimateId: string, vehicles: VehicleInput[], extras = false, pricing = false, persistMoney = false, expedited = false, charges = false) {
   return vehicles
     .filter(v => v.make || v.model || v.year)
     .slice(0, 100)
@@ -92,7 +92,6 @@ function vehicleRows(estimateId: string, vehicles: VehicleInput[], extras = fals
         is_running: v.is_running !== false,
         is_enclosed: !!v.is_enclosed,
         remarks: text(v.remarks, 500),
-        ...(flex ? { flex: !!v.flex } : {}), // only once the vehicles.flex column exists
         ...(expedited ? { expedited: !!v.expedited } : {}), // only once the vehicles.expedited column exists
       };
     });
@@ -205,7 +204,7 @@ export async function createEstimate(form: FormData): Promise<Result<{ id: strin
 
     let vehicles: VehicleInput[] = [];
     try { vehicles = JSON.parse(String(form.get("vehicles") || "[]")); } catch { vehicles = []; }
-    const rows = vehicleRows(est.id, vehicles, features.vehicleExtras, features.vehicleFlex, features.vehiclePricing, features.vehiclePricing && vehicles.some(v => moneyFieldSet(v.deposit) || moneyFieldSet(v.cod)), !!features.vehicleExpedited);
+    const rows = vehicleRows(est.id, vehicles, features.vehicleExtras, features.vehiclePricing, features.vehiclePricing && vehicles.some(v => moneyFieldSet(v.deposit) || moneyFieldSet(v.cod)), !!features.vehicleExpedited);
     if (rows.length) await admin.from("vehicles").insert(rows);
 
     const label = jobLabel({ job_number: est.job_number, customer_name: name });
@@ -310,8 +309,6 @@ export type LeadSave = {
   extra_stop_html?: string;
   /** Shared shipment Remarks (plain text); only sent when changed. */
   shipment_remarks?: string;
-  /** FLEX pricing flag; only sent when changed. */
-  flex?: boolean;
   deposit: string; cod: string;
   /** Up to 3 optional extra charge lines {description, amount}; undefined = unchanged. */
   extra_charges?: { description: string; amount: string }[];
@@ -476,8 +473,6 @@ export async function saveLead(estimateId: string, data: LeadSave): Promise<Resu
       if (value !== (bundle.est.shipment_remarks?.trim() || null)) { update.shipment_remarks = value; remarksChange = value; }
     }
 
-    if (data.flex !== undefined && !!data.flex !== !!bundle.est.flex) update.flex = !!data.flex;
-
     // Representative selector
     const newRepId = data.assigned_rep_id || null;
     let newRep: Awaited<ReturnType<typeof repById>> = null;
@@ -511,7 +506,7 @@ export async function saveLead(estimateId: string, data: LeadSave): Promise<Resu
       const c = toCents(v);
       return c === null ? "" : `$${(c / 100).toFixed(2)}`;
     };
-    const vehicleSummary = (list: { extra_charges?: unknown; charges?: unknown; discount_amount?: unknown; discount?: unknown; year?: unknown; make?: unknown; model?: unknown; vehicle_type?: unknown; is_running?: unknown; is_enclosed?: unknown; remarks?: unknown; color?: unknown; engine?: unknown; qty?: unknown; price?: unknown; flex?: unknown; asap?: unknown; expedited?: unknown; deposit?: unknown; cod?: unknown; deposit_amount?: unknown; cod_amount?: unknown; total_amount?: unknown }[]) =>
+    const vehicleSummary = (list: { extra_charges?: unknown; charges?: unknown; discount_amount?: unknown; discount?: unknown; year?: unknown; make?: unknown; model?: unknown; vehicle_type?: unknown; is_running?: unknown; is_enclosed?: unknown; remarks?: unknown; color?: unknown; engine?: unknown; qty?: unknown; price?: unknown; asap?: unknown; expedited?: unknown; deposit?: unknown; cod?: unknown; deposit_amount?: unknown; cod_amount?: unknown; total_amount?: unknown }[]) =>
       list.map(v => {
         const dep = v.deposit_amount ?? v.deposit;
         const codAmt = v.cod_amount ?? v.cod;
@@ -520,7 +515,7 @@ export async function saveLead(estimateId: string, data: LeadSave): Promise<Resu
           ? `Deposit ${dollars(dep)} · Carrier COD ${dollars(codAmt)} · Total ${dollars(tot)}`
           : v.price != null && v.price !== "" ? `$${Number(v.price).toFixed(2)}` : "";
         return [[v.year, v.make, v.model].filter(Boolean).join(" "), v.color, v.vehicle_type, v.engine, v.is_running === false ? "not running" : "running", v.is_enclosed ? "enclosed" : "open",
-          Number(v.qty ?? 1) > 1 ? `qty ${v.qty}` : "", money, chargesText(v), v.flex ? "FLEX" : "", v.asap ? "ASAP" : "", v.expedited ? "EXPEDITED" : "", v.remarks].filter(Boolean).join(" · ");
+          Number(v.qty ?? 1) > 1 ? `qty ${v.qty}` : "", money, chargesText(v), v.asap ? "ASAP" : "", v.expedited ? "EXPEDITED" : "", v.remarks].filter(Boolean).join(" · ");
       }).join("\n");
     // Per-vehicle Additional charges / Discount in the charges history (saved rows or form lines).
     function chargesText(v: { extra_charges?: unknown; charges?: unknown; discount_amount?: unknown; discount?: unknown }): string {
@@ -532,7 +527,7 @@ export async function saveLead(estimateId: string, data: LeadSave): Promise<Resu
     }
     const beforeVehicles = vehicleSummary(bundle.vehicles);
     await admin.from("vehicles").delete().eq("estimate_id", estimateId);
-    const rows = vehicleRows(estimateId, data.vehicles || [], features.vehicleExtras, features.vehicleFlex, features.vehiclePricing, persistMoney, !!features.vehicleExpedited, perVehicle);
+    const rows = vehicleRows(estimateId, data.vehicles || [], features.vehicleExtras, features.vehiclePricing, persistMoney, !!features.vehicleExpedited, perVehicle);
     if (rows.length) await admin.from("vehicles").insert(rows);
     const afterVehicles = vehicleSummary(rows);
 

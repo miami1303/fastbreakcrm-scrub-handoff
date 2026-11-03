@@ -7,7 +7,7 @@
 // Settings) and the lead's rep (Maintenance > Users); none is hard-coded here.
 // Rendering goes through the shared layout in lib/templates (see docs/adding-email-templates.md).
 //
-// Output is email-safe HTML: table layout + inline styles only (no flex/grid/classes),
+// Output is email-safe HTML: table layout + inline styles only (no CSS layout modules/grid/classes),
 // with absolute image URLs, so it renders the same in Gmail/Outlook and on the page.
 
 import { nameLines, phoneLines } from "./contact-display.ts";
@@ -57,29 +57,27 @@ export type QuoteEstimate = {
   extra_stop_html?: string | null;
   /** Shared shipment remarks (plain text), printed as "Remarks" under Vehicles when filled. */
   shipment_remarks?: string | null;
-  /** Legacy job-level FLEX (no UI any more; FLEX is per vehicle now). Still honored if set. */
-  flex?: boolean | null;
 };
 
 /**
- * Vehicle row Remarks cell. FLEX, ASAP, INOP and Enclosed print here (quote, e-sign, customer page, print).
- * One flag: "FLEX" / "ASAP" / "INOP" / "Enclosed", or "<flag> - <remark>". Several: joined with " - "
- * in that order ("FLEX - ASAP - INOP - Enclosed - <remark>"). They are not exclusive.
+ * Vehicle row Remarks cell. ASAP, INOP and Enclosed print here (quote, e-sign, customer page, print).
+ * One flag: "ASAP" / "INOP" / "Enclosed", or "<flag> - <remark>". Several: joined with " - "
+ * in that order ("ASAP - INOP - Enclosed - <remark>"). They are not exclusive.
  * INOP = the vehicle's Run is No; Enclosed = its Enclosed is Yes. A remark with no flag is unchanged.
  */
-export function vehicleRemarkTags(flex: boolean | null | undefined, asap?: boolean | null, inop?: boolean | null, enclosed?: boolean | null, expedited?: boolean | null): string[] {
-  return [flex ? "FLEX" : "", asap ? "ASAP" : "", inop ? "INOP" : "", enclosed ? "Enclosed" : "", expedited ? "EXPEDITED" : ""].filter(Boolean);
+export function vehicleRemarkTags(asap?: boolean | null, inop?: boolean | null, enclosed?: boolean | null, expedited?: boolean | null): string[] {
+  return [asap ? "ASAP" : "", inop ? "INOP" : "", enclosed ? "Enclosed" : "", expedited ? "EXPEDITED" : ""].filter(Boolean);
 }
-export function vehicleRemarkCell(remark: string | null | undefined, flex: boolean | null | undefined, asap?: boolean | null, inop?: boolean | null, enclosed?: boolean | null, expedited?: boolean | null): string {
-  const tags = vehicleRemarkTags(flex, asap, inop, enclosed, expedited);
+export function vehicleRemarkCell(remark: string | null | undefined, asap?: boolean | null, inop?: boolean | null, enclosed?: boolean | null, expedited?: boolean | null): string {
+  const tags = vehicleRemarkTags(asap, inop, enclosed, expedited);
   const r = (remark || "").trim();
   if (!tags.length) return r;
   const head = tags.join(" - ");
   return r ? `${head} - ${r}` : head;
 }
 /** Same text as vehicleRemarkCell, escaped for HTML, with INOP in red. */
-export function vehicleRemarkCellHtml(remark: string | null | undefined, flex: boolean | null | undefined, asap?: boolean | null, inop?: boolean | null, enclosed?: boolean | null, expedited?: boolean | null): string {
-  const parts = vehicleRemarkTags(flex, asap, inop, enclosed, expedited).map(t => t === "INOP" ? '<span style="color:#B12E39;font-weight:700;">INOP</span>' : escapeHtml(t));
+export function vehicleRemarkCellHtml(remark: string | null | undefined, asap?: boolean | null, inop?: boolean | null, enclosed?: boolean | null, expedited?: boolean | null): string {
+  const parts = vehicleRemarkTags(asap, inop, enclosed, expedited).map(t => t === "INOP" ? '<span style="color:#B12E39;font-weight:700;">INOP</span>' : escapeHtml(t));
   const r = (remark || "").trim();
   if (r) parts.push(escapeHtml(r));
   return parts.join(" - ");
@@ -87,24 +85,24 @@ export function vehicleRemarkCellHtml(remark: string | null | undefined, flex: b
 
 /**
  * Owner 2026-10-31 (2nd correction): selected toggles print on their OWN line under the vehicle row,
- * each under its column (FLEX / ASAP / EXPEDITED under Year/Make/Model + Type, INOP under Run in red,
+ * each under its column (ASAP / EXPEDITED under Year/Make/Model + Type, INOP under Run in red,
  * Enclosed under Enclosed Trailer). The Remarks cell holds ONLY what the rep typed. Enclosed off =
  * open trailer: nothing printed (the column already says No); OPEN is never printed.
  */
-type FlagVehicle = { flex?: boolean | null; asap?: boolean | null; is_running?: boolean | null; is_enclosed?: boolean | null; expedited?: boolean | null };
-export function vehicleFlagParts(v: FlagVehicle, jobFlex?: boolean | null) {
+type FlagVehicle = { asap?: boolean | null; is_running?: boolean | null; is_enclosed?: boolean | null; expedited?: boolean | null };
+export function vehicleFlagParts(v: FlagVehicle) {
   return {
-    main: [v.flex || jobFlex ? "FLEX" : "", v.asap ? "ASAP" : "", v.expedited ? "EXPEDITED" : ""].filter(Boolean),
+    main: [v.asap ? "ASAP" : "", v.expedited ? "EXPEDITED" : ""].filter(Boolean),
     inop: v.is_running === false,
     enclosed: !!v.is_enclosed,
   };
 }
-export function vehicleFlagLineText(v: FlagVehicle, jobFlex?: boolean | null): string {
-  const f = vehicleFlagParts(v, jobFlex);
+export function vehicleFlagLineText(v: FlagVehicle): string {
+  const f = vehicleFlagParts(v);
   return [...f.main, f.inop ? "INOP" : "", f.enclosed ? "Enclosed" : ""].filter(Boolean).join(" · ");
 }
-export function vehicleFlagLineHtml(v: FlagVehicle, jobFlex?: boolean | null): string {
-  const f = vehicleFlagParts(v, jobFlex);
+export function vehicleFlagLineHtml(v: FlagVehicle): string {
+  const f = vehicleFlagParts(v);
   if (!f.main.length && !f.inop && !f.enclosed) return "";
   const c = `${FONT}font-size:11px;font-weight:bold;letter-spacing:.3px;padding:1px 4px 3px 4px;border-left:1px solid #808080;border-right:1px solid #808080;border-bottom:1px solid #808080;`;
   return `
@@ -132,9 +130,7 @@ export type QuoteVehicle = {
   deposit_amount?: number | string | null;
   cod_amount?: number | string | null;
   total_amount?: number | string | null;
-  /** FLEX pricing for this vehicle: "FLEX" in its Remarks cell. */
-  flex?: boolean | null;
-  /** ASAP: "ASAP" in this vehicle's Remarks cell, same place as FLEX. */
+  /** ASAP: "ASAP" in this vehicle's Remarks cell. */
   asap?: boolean | null;
   expedited?: boolean | null;
   /** Per-vehicle Additional charges (migration 20261031190000): [{description, amount, collect}]. */
@@ -487,7 +483,7 @@ export function buildQuoteBody(input: QuoteInput): string {
         ${td(escapeHtml((v.remarks || "").trim()))}
         ${td(String(qtyOf(v)), "text-align:center;")}
         ${td(blocks[i]?.priceText ?? "", "text-align:right;")}
-      </tr>${vehicleFlagLineHtml(v, est.flex)}${(blocks[i]?.extras || []).map(x => `
+      </tr>${vehicleFlagLineHtml(v)}${(blocks[i]?.extras || []).map(x => `
       <tr data-vehicle-charge="${i + 1}">${subRow(`${escapeHtml(x.description)}:`, formatCents(x.cents))}</tr>`).join("")}${blocks[i]?.paidC != null ? `
       <tr data-vehicle-paid="${i + 1}">${subRow(`Customer Payment (${escapeHtml(vehicleLabel(v))}):`, formatCents(blocks[i].paidC!), "color:#008000;")}</tr>` : ""}`).join("")
     : `<tr>${td("&nbsp;")}${td("")}${td("")}${td("")}${td("")}${td("")}${td("")}</tr>`;
@@ -648,7 +644,7 @@ export function buildQuoteText(input: QuoteInput): string {
     "Year / Make / Model | Type | Run | Enclosed Trailer | Remarks | Qty | Total Price",
     ...vehicles.flatMap((v, i) => [
       `${vehicleLabel(v)} | ${v.vehicle_type || ""} | ${yesNo(v.is_running)} | ${yesNo(v.is_enclosed)} | ${(v.remarks || "").trim()} | ${qtyOf(v)} | ${blocks[i]?.priceText ?? ""}`,
-      ...(vehicleFlagLineText(v, est.flex) ? [`  ${vehicleFlagLineText(v, est.flex)}`] : []),
+      ...(vehicleFlagLineText(v) ? [`  ${vehicleFlagLineText(v)}`] : []),
       ...(blocks[i]?.extras || []).map(x => `  ${x.description}: ${formatCents(x.cents)}`),
       ...(blocks[i]?.paidC != null ? [`  Customer Payment (${vehicleLabel(v)}): ${formatCents(blocks[i].paidC!)}`] : []),
     ]),

@@ -41,7 +41,7 @@ function VehiclesScreen() {
   const extras = lead.features.vehicleExtras;
   const pricing = !!lead.features.vehiclePricing;
   // Deposit / Carrier COD / Total show on this screen only once a second vehicle is being added.
-  // A one-vehicle job keeps the single set of boxes on Charges. FLEX and ASAP are on every vehicle.
+  // A one-vehicle job keeps the single set of boxes on Charges. ASAP is on every vehicle.
   const addingAnother = editing === -1 && list.length >= 1;
   const showMoney = pricing && (list.length >= 2 || addingAnother);
   const customTypes = useCustomTypes();
@@ -126,7 +126,7 @@ function VehiclesScreen() {
               {editing >= 0 && <button type="button" className="btn btn-sm" onClick={() => open(-2)}>Cancel</button>}
             </td>
           </tr>
-          <tr><td colSpan={16}><div className="veh-remarks-cell"><VehicleFlags flex={row.flex} asap={row.asap} inop={row.is_running === false} enclosed={!!row.is_enclosed} expedited={!!row.expedited} flexTestId="veh-flex-tag" asapTestId="veh-asap-tag" inopTestId="veh-inop-tag" enclosedTestId="veh-enclosed-tag" /><input value={row.remarks} onChange={e => up({ remarks: e.target.value })} aria-label="Vehicle remarks" placeholder="Vehicle remarks (optional: low clearance, no keys…)" maxLength={300} className="veh-remarks" data-testid="veh-remarks" /></div></td></tr>
+          <tr><td colSpan={16}><div className="veh-remarks-cell"><VehicleFlags asap={row.asap} inop={row.is_running === false} enclosed={!!row.is_enclosed} expedited={!!row.expedited} asapTestId="veh-asap-tag" inopTestId="veh-inop-tag" enclosedTestId="veh-enclosed-tag" /><input value={row.remarks} onChange={e => up({ remarks: e.target.value })} aria-label="Vehicle remarks" placeholder="Vehicle remarks (optional: low clearance, no keys…)" maxLength={300} className="veh-remarks" data-testid="veh-remarks" /></div></td></tr>
           </tbody></table>
           <p className="muted small">If a make, model, or type is not listed, type it. It is saved for the next vehicle. Saving still works if a list does not load.</p>
           {editing >= 0 && (
@@ -145,7 +145,7 @@ function VehiclesScreen() {
             const legacyUnit = cell.kind === "own" && priceCents(v) !== null && splitTotalCents(v) === null;
             return (
             <tr key={i} className={`clickable${editing === i ? " sel" : ""}`} onClick={() => open(i)} data-testid="vehicle-row" title="Click to edit">
-              <td>{i + 1}</td><td><b>{[v.year, v.make, v.model].filter(Boolean).join(" ")}</b><VehicleFlags flex={v.flex} asap={v.asap} inop={v.is_running === false} enclosed={!!v.is_enclosed} expedited={!!v.expedited} />{v.remarks && <small className="muted"> — {v.remarks}</small>}</td>
+              <td>{i + 1}</td><td><b>{[v.year, v.make, v.model].filter(Boolean).join(" ")}</b><VehicleFlags asap={v.asap} inop={v.is_running === false} enclosed={!!v.is_enclosed} expedited={!!v.expedited} />{v.remarks && <small className="muted"> — {v.remarks}</small>}</td>
               {extras && <td>{v.color}</td>}<td>{v.vehicle_type}</td>{extras && <td>{v.engine}</td>}<td>{v.is_running ? "Y" : "N"}</td><td>{v.is_enclosed ? "Y" : "N"}</td>
               {extras && <td>{qtyOf(v)}</td>}
               {pricing && list.length > 1 && <>

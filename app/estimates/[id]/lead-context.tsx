@@ -68,9 +68,9 @@ export function toForm(l: Lead): FormState {
   let deposit = moneyInput(l.quote?.deposit_amount ?? e.deposit_amount);
   let cod = moneyInput(l.quote?.cod_amount ?? e.cod_amount);
   let vehicles = l.vehicles.map(v => {
-    const x = v as typeof v & { color?: string | null; engine?: string | null; qty?: number | null; price?: number | string | null; flex?: boolean | null; asap?: boolean | null; expedited?: boolean | null; deposit_amount?: number | string | null; cod_amount?: number | string | null };
+    const x = v as typeof v & { color?: string | null; engine?: string | null; qty?: number | null; price?: number | string | null; asap?: boolean | null; expedited?: boolean | null; deposit_amount?: number | string | null; cod_amount?: number | string | null };
     return { year: s(v.year), make: s(v.make), model: s(v.model), vehicle_type: s(v.vehicle_type), is_running: v.is_running !== false, is_enclosed: !!v.is_enclosed, remarks: s(v.remarks),
-      color: s(x.color), engine: s(x.engine), qty: x.qty ? String(x.qty) : "1", price: x.price === null || x.price === undefined ? "" : moneyInput(x.price), flex: !!x.flex, asap: !!x.asap, expedited: !!x.expedited,
+      color: s(x.color), engine: s(x.engine), qty: x.qty ? String(x.qty) : "1", price: x.price === null || x.price === undefined ? "" : moneyInput(x.price), asap: !!x.asap, expedited: !!x.expedited,
       deposit: x.deposit_amount === null || x.deposit_amount === undefined ? "" : moneyInput(x.deposit_amount),
       cod: x.cod_amount === null || x.cod_amount === undefined ? "" : moneyInput(x.cod_amount),
       ...(l.features.vehicleCharges ? {

@@ -472,12 +472,12 @@
 .ch-mrow { display: grid; grid-template-columns: 1fr 110px; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; color: #536676; }
 .ch-mrow small { font-weight: 400; }
 .ch-mrow input { height: 30px; border: 1px solid #cfd8e0; border-radius: 6px; padding: 0 8px; text-align: right; font: inherit; font-size: 13px; }
-.ch-flex { display: flex; justify-content: flex-end; align-items: center; gap: 6px; font-size: 13px; font-weight: 700; color: #b45309; cursor: pointer; }
-.ch-flex input { width: 16px; height: 16px; }
+.ch-check { display: flex; justify-content: flex-end; align-items: center; gap: 6px; font-size: 13px; font-weight: 700; color: #b45309; cursor: pointer; }
+.ch-check input { width: 16px; height: 16px; }
 /* Charges vehicle flags: compact chips (see .flag-chip below), left-aligned, wrapping to a 2nd row. */
 .ch-price.multi { grid-template-columns: minmax(0, 1fr); }
 .ch-change { white-space: pre-line; }
-/* On/off switch (FLEX, ASAP, Auto-charge). Green track when on. 44px hit target. */
+/* On/off switch (ASAP, Auto-charge). Green track when on. 44px hit target. */
 .toggle { display: inline-flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .toggle-hit { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; min-width: 44px; padding: 4px 2px; border: 0; background: transparent; cursor: pointer; font: inherit; color: inherit; }
 .toggle-hit:disabled { cursor: not-allowed; }
@@ -847,24 +847,24 @@ button.network-choice{width:100%;background:#fff;text-align:left;cursor:pointer;
 .ec-opt:disabled { opacity: .45; cursor: not-allowed; }
 .removal-notice { color: #C62828; }
 .removal-notice .block-id-link { margin-left: 0; color: #1a56db; text-decoration: underline; font-weight: 700; font-size: inherit; padding: 0; }
-/* Per-vehicle FLEX tag (vehicle line + the remarks box under the vehicle) */
-.flex-tag { display: inline-block; margin: 0 6px; padding: 0 6px; border-radius: 4px; background: #fff4e5; color: #b45309; border: 1px solid #f5c27a; font-size: 11px; font-weight: 800; letter-spacing: .04em; vertical-align: 1px; }
+/* Per-vehicle flag tag (vehicle line + the remarks box under the vehicle) */
+.veh-tag { display: inline-block; margin: 0 6px; padding: 0 6px; border-radius: 4px; background: #fff4e5; color: #b45309; border: 1px solid #f5c27a; font-size: 11px; font-weight: 800; letter-spacing: .04em; vertical-align: 1px; }
 .asap-tag { background: #e8f4ff; color: #1554b0; border-color: #b9d4f5; }
 .inop-tag { background: #fde8ea; color: #b12e39; border-color: #f1a9b0; }
 .enclosed-tag { background: #eef0fb; color: #3c3f99; border-color: #c3c6ee; }
 .veh-remarks-cell { display: flex; align-items: center; gap: 4px; }
-.veh-remarks-cell .flex-tag { margin-left: 0; flex: 0 0 auto; }
+.veh-remarks-cell .veh-tag { margin-left: 0; flex: 0 0 auto; }
 .veh-remarks-cell .veh-flag-row { flex: 0 0 auto; }
-/* FLEX / ASAP / INOP / Enclosed / EXPEDITED: one row, never wraps between chips */
+/* ASAP / INOP / Enclosed / EXPEDITED: one row, never wraps between chips */
 .veh-flag-row { display: inline-flex; flex-wrap: nowrap; align-items: center; white-space: nowrap; vertical-align: 1px; }
-.veh-flag-row .flex-tag { vertical-align: 0; }
+.veh-flag-row .veh-tag { vertical-align: 0; }
 /* Lead vehicle table: the chips get their own line under the vehicle, all in one row */
 .veh-group.has-flags > tr:first-child > td { border-bottom: 0; padding-bottom: 1px; }
 .veh-group .veh-flags-line > td { padding-top: 1px; }
-.veh-group .veh-flags-line .flex-tag:first-child { margin-left: 0; }
-/* Each chip sits under its matching column: INOP under Run, Enclosed under Enclosed; FLEX / ASAP / EXPEDITED under the vehicle */
+.veh-group .veh-flags-line .veh-tag:first-child { margin-left: 0; }
+/* Each chip sits under its matching column: INOP under Run, Enclosed under Enclosed; ASAP / EXPEDITED under the vehicle */
 .veh-group .veh-flags-line > td { white-space: nowrap; }
-.veh-group .veh-flags-line .veh-flag-row .flex-tag { margin: 0 6px 0 0; }
+.veh-group .veh-flags-line .veh-flag-row .veh-tag { margin: 0 6px 0 0; }
 .veh-group:hover td { background: var(--brand-blue-pale); }
 .veh-compact .veh-group > tr:last-child > td { border-bottom: 1px solid #edf0f3; }
 .veh-remarks-cell .veh-remarks { flex: 1 1 auto; }
@@ -1036,8 +1036,8 @@ button.network-choice{width:100%;background:#fff;text-align:left;cursor:pointer;
 
 /* Owner 2026-10-31: chip / toggle line under each vehicle sits left-aligned under its own column. */
 .veh-group .veh-flags-line > td { text-align: left; vertical-align: top; }
-.veh-group .veh-flags-line > td > .veh-flag-row > .flex-tag:first-child,
-.veh-group .veh-flags-line > td > .flex-tag:first-child { margin-left: 0; }
+.veh-group .veh-flags-line > td > .veh-flag-row > .veh-tag:first-child,
+.veh-group .veh-flags-line > td > .veh-tag:first-child { margin-left: 0; }
 .veh-toggle-line .veh-flag-row { display: flex; gap: 4px; }
 .veh-toggle-line > td { padding-bottom: 4px; }
 .veh-no { color: var(--muted); margin-right: 2px; }

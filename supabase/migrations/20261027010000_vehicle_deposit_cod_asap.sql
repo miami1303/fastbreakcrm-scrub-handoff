@@ -13,8 +13,7 @@
 -- 0 means the rep entered zero. The app shows an unsplit job's deposit and COD on the
 -- first vehicle until the next save, and does not drop the stored job numbers.
 --
--- ASAP prints in that vehicle's remarks cell the same way FLEX does. Existing rows are false.
--- Both flags may be on together ("FLEX - ASAP").
+-- ASAP prints in that vehicle's remarks cell. Existing rows are false.
 
 alter table public.vehicles add column if not exists deposit_amount numeric(12,2);
 alter table public.vehicles add column if not exists cod_amount numeric(12,2);
@@ -47,4 +46,4 @@ comment on column public.vehicles.cod_amount is
 comment on column public.vehicles.total_amount is
   'Per-vehicle total = deposit_amount + cod_amount. Extra charges stay on the job total.';
 comment on column public.vehicles.asap is
-  'When true, the customer sees ASAP in this vehicle''s remarks cell (same place as FLEX).';
+  'When true, the customer sees ASAP in this vehicle''s remarks cell.';

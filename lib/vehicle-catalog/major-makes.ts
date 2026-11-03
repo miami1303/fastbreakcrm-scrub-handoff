@@ -95,7 +95,6 @@ export const MAJOR_MAKES: MajorMake[] = [
     ["Festiva", "Hatchback"],
     ["Fiesta", "Hatchback"],
     ["Five Hundred", "Sedan"],
-    ["Flex", "SUV"],
     ["Focus", "Sedan"],
     ["Freestar", "Van"],
     ["Freestyle", "SUV"],

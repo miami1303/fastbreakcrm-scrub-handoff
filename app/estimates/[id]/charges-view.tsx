@@ -220,13 +220,13 @@ export default function ChargesView() {
               <div className="ch-label">Vehicles</div>
               {multi
                 ? <>
-                  <VehiclePrices leadId={id} vehicles={form.vehicles} flexOn={!!lead.features.vehicleFlex} asapOn={pricing} expeditedOn={!!lead.features.vehicleExpedited} onChange={writeVehicle} />
+                  <VehiclePrices leadId={id} vehicles={form.vehicles} asapOn={pricing} expeditedOn={!!lead.features.vehicleExpedited} onChange={writeVehicle} />
                   {perVehicle && <VehicleExtrasBox showPaid={showPayment} onChange={setVehicleCharges}
                     vehicles={listedIdx.map((vi, k) => ({ vi, name: `${k + 1}. ${vehicleDisplayName(form.vehicles[vi], k)}`, deposit: form.vehicles[vi].deposit, cod: form.vehicles[vi].cod,
                       charges: form.vehicles[vi].charges, discount: form.vehicles[vi].discount, paidC: paidBy.byVehicleC[k] ?? 0 }))} />}
                 </>
                 : <VehicleList leadId={id} vehicles={form.vehicles} showPrices={lead.features.vehicleExtras} totalCents={sum.totalC} table
-                  toggles={{ flexOn: !!lead.features.vehicleFlex, asapOn: !!lead.features.vehiclePricing, expeditedOn: !!lead.features.vehicleExpedited, onChange: writeVehicle }} />}
+                  toggles={{ asapOn: !!lead.features.vehiclePricing, expeditedOn: !!lead.features.vehicleExpedited, onChange: writeVehicle }} />}
               {/* Owner 2026-10-31: the notes stack replaces the single Remarks box (shipment_remarks stays in the data;
                   the customer's "Remarks" under Vehicles now prints the newest Customer's Remarks note). */}
               <div className="notes-stack under-veh" data-testid="notes-grid">
@@ -245,7 +245,7 @@ export default function ChargesView() {
             <div className="ch-money">
               {multi && <div className="ch-label">Job totals</div>}
               {multi && moneyDiffers && <span className="soft-warn" data-testid="money-mismatch">Saved job Deposit / Carrier COD does not match the vehicle prices. Edit a vehicle price to use the per-vehicle totals.</span>}
-              {/* Owner 2026-10-31: FLEX / ASAP / INOP / ENC / EXPEDITED are set here on the lead only (one small toggle
+              {/* Owner 2026-10-31: ASAP / INOP / ENC / EXPEDITED are set here on the lead only (one small toggle
                   row under every vehicle, 1 vehicle or many). The Add/Update Vehicle screen no longer has its own toggles. */}
               {multi ? <>
                 <div className="ch-mrow">Deposit<b data-testid="job-deposit">{formatCents(toCents(form.deposit) ?? entered.depositC)}</b></div>

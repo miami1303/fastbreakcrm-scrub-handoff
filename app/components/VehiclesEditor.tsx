@@ -10,17 +10,15 @@ export type VehicleValue = {
   color?: string; engine?: string; qty?: string; price?: string;
   /** Per-vehicle deposit and carrier COD (migration 20261027010000). Blank = not entered. */
   deposit?: string; cod?: string;
-  /** FLEX pricing for this vehicle (migration 20261024010000). */
-  flex?: boolean;
-  /** ASAP: shown in this vehicle's remarks the same way as FLEX. */
+  /** ASAP: shown in this vehicle's remarks remarks cell. */
   asap?: boolean;
-  /** Expedited (migration 20261031150000): shown in remarks the same way as FLEX / ASAP. */
+  /** Expedited (migration 20261031150000): shown in remarks the same way as ASAP. */
   expedited?: boolean;
   /** Per-vehicle Additional charges (3 lines) and Discount (migration 20261031190000). */
   charges?: { description: string; amount: string; collect: "payment" | "cod"; all?: boolean }[];
   discount?: string;
 };
-export const emptyVehicle = (): VehicleValue => ({ year: "", make: "", model: "", vehicle_type: "Sedan", is_running: true, is_enclosed: false, remarks: "", color: "", engine: "", qty: "1", price: "", deposit: "", cod: "", flex: false, asap: false, expedited: false });
+export const emptyVehicle = (): VehicleValue => ({ year: "", make: "", model: "", vehicle_type: "Sedan", is_running: true, is_enclosed: false, remarks: "", color: "", engine: "", qty: "1", price: "", deposit: "", cod: "", asap: false, expedited: false });
 
 function YesNo({ value, onChange, label }: { value: boolean; onChange: (v: boolean) => void; label: string }) {
   return (

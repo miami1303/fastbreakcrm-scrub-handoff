@@ -59,7 +59,7 @@ test("FB400009: a Credit Card deposit typed in Payment Info is recorded while St
   assert.equal(countsAsPaid("processing"), false);
 });
 
-test("Enclosed chip reads ENC/OPEN; Expedited sits with FLEX/ASAP/INOP; chips are compact and only on multi-vehicle rows", async () => {
+test("Enclosed chip reads ENC/OPEN; Expedited sits with ASAP/INOP; chips are compact and only on multi-vehicle rows", async () => {
   const fs = await import("node:fs");
   const view = fs.readFileSync(new URL("../app/estimates/[id]/charges-view.tsx", import.meta.url), "utf8");
   const rows = fs.readFileSync(new URL("../app/components/VehiclePrices.tsx", import.meta.url), "utf8");
@@ -69,5 +69,5 @@ test("Enclosed chip reads ENC/OPEN; Expedited sits with FLEX/ASAP/INOP; chips ar
   assert.doesNotMatch(view, /charge-flags/);
   assert.doesNotMatch(view, /<Toggle /);
   const { vehicleRemarkCell } = await import("../lib/quote-template.ts");
-  assert.equal(vehicleRemarkCell("", false, false, false, false, true), "EXPEDITED");
+  assert.equal(vehicleRemarkCell("", false, false, false, true), "EXPEDITED");
 });

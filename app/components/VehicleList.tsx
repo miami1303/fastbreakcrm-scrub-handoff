@@ -12,18 +12,18 @@ import { VehicleToggleCells } from "@/app/components/VehiclePrices";
 
 /** Vehicles on a lead: click one to edit it on the Add/Update Vehicle screen; Add Vehicle opens it blank. */
 export default function VehicleList({ leadId, vehicles, showPrices, totalCents, table = false, toggles }: { leadId: string; vehicles: VehicleValue[]; showPrices: boolean; totalCents: number; table?: boolean;
-  /** Every vehicle (1 or more) without per-vehicle prices: one small toggle row per vehicle (FLEX / ASAP / INOP / ENC / EXPEDITED). */
-  toggles?: { flexOn: boolean; asapOn: boolean; expeditedOn: boolean; onChange: (index: number, patch: Partial<VehicleValue>) => void } }) {
+  /** Every vehicle (1 or more) without per-vehicle prices: one small toggle row per vehicle (ASAP / INOP / ENC / EXPEDITED). */
+  toggles?: { asapOn: boolean; expeditedOn: boolean; onChange: (index: number, patch: Partial<VehicleValue>) => void } }) {
   const list = vehicles.filter(hasVehicleData);
   const router = useRouter();
   const edit = (i: number) => `/estimates/${leadId}/vehicles?edit=${i}`;
   if (table) return (
     <div className="veh-summary" data-testid="vehicle-summary">
       {/* Each vehicle is its own tbody: the vehicle line, then (when any are on) a chip line under it where each chip sits
-          under its matching column: FLEX / ASAP / EXPEDITED under Year / Make / Model (spilling into Type, which has no chip, so the row never widens), INOP under Run, Enclosed under Enclosed. */}
+          under its matching column: ASAP / EXPEDITED under Year / Make / Model (spilling into Type, which has no chip, so the row never widens), INOP under Run, Enclosed under Enclosed. */}
       <div className="table-scroll"><table className="mini-table veh-compact" data-testid="vehicle-table"><thead><tr><th>Year / Make / Model</th><th>Type</th><th>Run</th><th>Enclosed</th><th>Qty</th>{showPrices && <th className="num">Price</th>}</tr></thead>
         {list.map((v, i) => {
-          const hasFlags = !!(v.flex || v.asap || v.is_running === false || v.is_enclosed || v.expedited);
+          const hasFlags = !!(v.asap || v.is_running === false || v.is_enclosed || v.expedited);
           const go = () => router.push(edit(i));
           return (
             <tbody key={i} className={`veh-group${hasFlags || (toggles && list.length >= 1) ? " has-flags" : ""}`} onClick={go} title="Click to edit">
@@ -32,9 +32,9 @@ export default function VehicleList({ leadId, vehicles, showPrices, totalCents, 
                 <td>{v.vehicle_type}</td><td>{v.is_running ? "Y" : "N"}</td><td>{v.is_enclosed ? "Y" : "N"}</td><td>{qtyOf(v)}</td>
                 {showPrices && <td className="num"><VehiclePrice cell={vehiclePriceCell(v, list.length, totalCents)} /></td>}
               </tr>
-              {toggles && list.length >= 1 ? <VehicleToggleCells v={v} flexOn={toggles.flexOn} asapOn={toggles.asapOn} expeditedOn={toggles.expeditedOn}
+              {toggles && list.length >= 1 ? <VehicleToggleCells v={v} asapOn={toggles.asapOn} expeditedOn={toggles.expeditedOn}
                 trailing={showPrices ? 2 : 1} onChange={p => toggles.onChange(vehicles.indexOf(v), p)} /> : hasFlags && <tr className="clickable veh-flags-line" data-testid="vehicle-flags-line">
-                <td colSpan={2}><VehicleFlags flex={v.flex} asap={v.asap} expedited={!!v.expedited} /></td>
+                <td colSpan={2}><VehicleFlags asap={v.asap} expedited={!!v.expedited} /></td>
                 <td data-testid="vehicle-flags-run"><VehicleFlags inop={v.is_running === false} /></td>
                 <td data-testid="vehicle-flags-enclosed"><VehicleFlags enclosed={!!v.is_enclosed} /></td>
                 <td />{showPrices && <td />}
@@ -59,7 +59,7 @@ export default function VehicleList({ leadId, vehicles, showPrices, totalCents, 
               {v.color && ` · ${v.color}`}{v.vehicle_type && ` · ${v.vehicle_type}`} · {v.is_running ? "Running" : "Not running"} · {v.is_enclosed ? "Enclosed" : "Open"}
               {qtyOf(v) > 1 && ` · Qty ${qtyOf(v)}`}
               {showPrices && <> · <VehiclePrice cell={vehiclePriceCell(v, list.length, totalCents)} /></>}
-              <VehicleFlags flex={v.flex} asap={v.asap} inop={v.is_running === false} enclosed={!!v.is_enclosed} expedited={!!v.expedited} />
+              <VehicleFlags asap={v.asap} inop={v.is_running === false} enclosed={!!v.is_enclosed} expedited={!!v.expedited} />
               {v.remarks && <small className="muted"> — {v.remarks}</small>}
             </li>
           ))}
